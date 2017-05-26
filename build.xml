@@ -1,0 +1,97 @@
+<project name="Pulsepoint AdManager" default="build" basedir=".">
+	<property file="build.properties"/>
+
+	<property name="src" value="${basedir}/flash" />
+	<property name="html5" value="${basedir}/html5" />
+	<property name="lib" value="${basedir}/lib" />
+	<property name="build" location="${build-path}" />
+	<property name="tmp.dir" value="${basedir}/tmp" />
+	<property name="tmp.flash.dir" value="${basedir}/tmp/flash" />
+  <condition property="uglifyjs" value="uglifyjs.cmd" else="uglifyjs">
+      <os family="windows"/>
+  </condition>
+	<taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
+	<taskdef name="mxmlc" classname="flex.ant.MxmlcTask" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
+
+	<target name="html5">
+	    <concat destfile="${tmp.dir}/vpaid.js" >
+					<fileset dir="${html5}">
+						 <include name="html5player.js"/>
+					</fileset>
+					<fileset dir="${html5}">
+						 <include name="com/pulsepoint/utils/**/*.js"/>
+					</fileset>
+					<fileset dir="${html5}">
+							<include name="**/*.js" />
+							<exclude name="html5player.js"/>
+							<exclude name="html5init.js"/>
+							<exclude name="com/pulsepoint/utils/**/*.js"/>
+					</fileset>
+					<fileset dir="${html5}">
+						 <include name="html5init.js"/>
+					</fileset>
+	    </concat>
+
+			<replace file="${tmp.dir}/vpaid.js" encoding="UTF-8" token="__FLASH_JS_WRAPPER_PATH__" value="${flashjswrapper-path}" />
+
+			<exec executable="${uglifyjs}">
+				<arg path="${tmp.dir}/vpaid.js"/>
+				<arg value="-o"/>
+				<arg path="${build}/vpaid.js"/>
+				<arg value="-c"/>
+				<arg value="evaluate=false"/>
+				<arg value="-m"/>
+			</exec>
+	</target>
+
+	<target name="flashjswrapper">
+		<property name="verbose-stacktraces" value="false" />
+		<mxmlc
+			file="${src}/com/pulsepoint/FlashJSWrapper.as"
+			output="${build}/flashjswrapper.swf"
+			warnings="false"
+			target-player="11.1.0"
+			as3="true"
+			static-rsls="true"
+			compiler.verbose-stacktraces="${verbose-stacktraces}">
+			<source-path path-element="${src}" />
+		</mxmlc>
+	</target>
+
+	<target name="build" depends="clean, init, html5, flashjswrapper">
+		<property name="verbose-stacktraces" value="false" />
+		<copy todir="${tmp.flash.dir}">
+        <fileset dir="${src}"/>
+    </copy>
+
+		<mxmlc
+			file="${tmp.flash.dir}/com/pulsepoint/MainPlayer.as"
+			output="${build}/vpaid.swf"
+			warnings="false"
+			target-player="11.1"
+			as3="true"
+			static-rsls="true"
+			compiler.verbose-stacktraces="${verbose-stacktraces}">
+			<source-path path-element="${tmp.flash.dir}" />
+			<library-path dir="${lib}" append="false">
+				<include name="*.swc" />
+			</library-path>
+		</mxmlc>
+	</target>
+
+	<target name="clean">
+		<echo message="cleaning up build directory" />
+		<delete includeEmptyDirs="true" failonerror="false">
+    	<fileset dir="${tmp.dir}"/>
+  	</delete>
+		<delete file="${build}/vpaid.swf" />
+		<delete file="${build}/vpaid.js" />
+	</target>
+
+	<target name="init">
+		<mkdir dir="${tmp.dir}"/>
+		<mkdir dir="${tmp.flash.dir}"/>
+		<mkdir dir="${build}"/>
+	</target>
+
+</project>
