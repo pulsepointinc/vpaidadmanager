@@ -291,15 +291,15 @@ window.ppa.jsvpaid.MainPlayer = function() {
 
     this.onAdLoaderExit = function(){
         if (self.currentAd){
-            fireError();
+            fireError(loadNextAd);
             self.currentAd.destroy();
             self.currentAd.exitCallback = function(){};
             self.currentAd = null;
+        }else{
+          setTimeout(function(){
+            loadNextAd();
+          }, 0);
         }
-
-        setTimeout(function(){
-          loadNextAd();
-        }, 0);
     };
 
     this.onVPAIDEvent = function(event) {
@@ -439,7 +439,7 @@ window.ppa.jsvpaid.MainPlayer = function() {
         }
     };
 
-    function fireError(){
+    function fireError(callback){
       if (self.currentAd){
           var errorPixel = new Array();
           if (self.currentAd.linearNode){
@@ -447,7 +447,7 @@ window.ppa.jsvpaid.MainPlayer = function() {
           }else if(self.currentAd.vastWrapper){
             errorPixel = self.currentAd.vastWrapper.pixels.error;
           }
-          Tracker.fire(errorPixel);
+          Tracker.fire(errorPixel, callback);
       }
     };
 

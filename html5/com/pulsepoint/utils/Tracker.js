@@ -5,12 +5,17 @@ window.ppa.jsvpaid.Tracker = function() {
 
     this.classConstructor.Image = Image;
 
-    this.classConstructor.fire = function(pixel) {
+    this.classConstructor.fire = function(pixel, callback) {
         if (pixel) {
             for (var i = 0; i < pixel.length; i++) {
                 if (pixel[i] && pixel[i] != "") {
                     var img = new this.Image();
                     img.src = MacroHelper.replaceMacro(pixel[i]);
+                    if (i === (pixel.length -1) && typeof callback === "function"){
+                        img.onload=function(){
+                          callback();
+                        }
+                    }
                 }
             }
         }
