@@ -10,9 +10,9 @@ window.ppa.jsvpaid.Tracker = function() {
             for (var i = 0; i < pixel.length; i++) {
                 if (pixel[i] && pixel[i] != "") {
                     if (typeof navigator.sendBeacon === "function"){
-                      navigator.sendBeacon(pixel[i]);
+                      navigator.sendBeacon(MacroHelper.replaceMacro(pixel[i]));
 
-                      if (typeof callback === "function"){
+                      if (i === (pixel.length -1) && typeof callback === "function"){
                           callback();
                       }
                     }else{
