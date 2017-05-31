@@ -9,12 +9,20 @@ window.ppa.jsvpaid.Tracker = function() {
         if (pixel) {
             for (var i = 0; i < pixel.length; i++) {
                 if (pixel[i] && pixel[i] != "") {
-                    var img = new this.Image();
-                    img.src = MacroHelper.replaceMacro(pixel[i]);
-                    if (i === (pixel.length -1) && typeof callback === "function"){
-                        img.onload=function(){
+                    if (typeof navigator.sendBeacon === "function"){
+                      navigator.sendBeacon(pixel[i]);
+
+                      if (typeof callback === "function"){
                           callback();
-                        }
+                      }
+                    }else{
+                      var img = new this.Image();
+                      img.src = MacroHelper.replaceMacro(pixel[i]);
+                      if (i === (pixel.length -1) && typeof callback === "function"){
+                          img.onload=function(){
+                            callback();
+                          }
+                      }
                     }
                 }
             }
