@@ -246,7 +246,9 @@ window.ppa.jsvpaid.MainPlayer = function() {
             }
 
             if (self.ads.length === 0){
-                callEvent('AdError');
+                setTimeout(function(){
+                  callEvent('AdError');
+                }, 300);
                 return;
             }else{
                 setTimeout(function(){
@@ -254,7 +256,9 @@ window.ppa.jsvpaid.MainPlayer = function() {
                 }, 0);
             }
         } else {
-            callEvent('AdError');
+            setTimeout(function(){
+              callEvent('AdError');
+            }, 300);
             return;
         }
 
@@ -263,7 +267,9 @@ window.ppa.jsvpaid.MainPlayer = function() {
 
     function loadNextAd(){
         if (self.ads.length === 0){
-            callEvent('AdError');
+            setTimeout(function(){
+              callEvent('AdError');
+            }, 300);
             return;
         }
 
@@ -311,7 +317,9 @@ window.ppa.jsvpaid.MainPlayer = function() {
                 self.VPAIDAd = self.currentAd.VPAIDAd;
                 self.linearNode = self.currentAd.linearNode;
             }else{
-                callEvent('AdError');
+                setTimeout(function(){
+                  callEvent('AdError');
+                }, 300);
                 return;
             }
 
